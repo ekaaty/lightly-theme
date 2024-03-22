@@ -155,7 +155,7 @@ namespace LightlyPrivate
 
     //_______________________________________________________________
     bool isProgressBarHorizontal( const QStyleOptionProgressBar* option )
-    {  return option && ( (option->state & QStyle::State_Horizontal ) || option->orientation == Qt::Horizontal ); }
+    {return option && (option->state & QStyle::State_Horizontal);}
     
     //* list of possible valid toolbars to be translucent
     //* only one can be at time
@@ -1004,7 +1004,7 @@ namespace Lightly
             case PE_IndicatorToolBarHandle: fcn = &Style::drawIndicatorToolBarHandlePrimitive; break;
             case PE_IndicatorToolBarSeparator: fcn = &Style::drawIndicatorToolBarSeparatorPrimitive; break;
             case PE_IndicatorBranch: fcn = &Style::drawIndicatorBranchPrimitive; break;
-            case PE_FrameStatusBar: fcn = &Style::emptyPrimitive; break;
+            case PE_FrameStatusBarItem: fcn = &Style::emptyPrimitive; break;
             case PE_Frame: fcn = &Style::drawFramePrimitive; break;
             case PE_FrameLineEdit: fcn = &Style::drawFrameLineEditPrimitive; break;
             case PE_FrameMenu: fcn = &Style::drawFrameMenuPrimitive; break;
@@ -1471,8 +1471,8 @@ namespace Lightly
             {
                 _helper->renderMenuFrame( &painter, rect, background, outline, false );
 
-            } else if( StyleConfigData::dockWidgetDrawFrame() || (dockWidget->features()&QDockWidget::AllDockWidgetFeatures) ) {
-    
+            } else if( StyleConfigData::dockWidgetDrawFrame() && (dockWidget->features() & (QDockWidget::DockWidgetClosable | QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable))){
+
                 _helper->renderFrame( &painter, rect, background, palette, windowActive );
 
             } else {
@@ -3788,6 +3788,10 @@ namespace Lightly
 
                 color = palette.color( QPalette::HighlightedText );
 
+            } else if (sunken) {
+
+                color = palette.color( QPalette::HighlightedText );
+
             } else {
 
                 color = _helper->arrowColor( palette, QPalette::ButtonText );
@@ -3797,7 +3801,8 @@ namespace Lightly
         } else color = _helper->arrowColor( palette, QPalette::WindowText );
 
         // render
-        _helper->renderArrow( painter, rect, color, orientation );
+        auto arrowRect(rect.adjusted(-3, 0, -3, 0));
+        _helper->renderArrow( painter, arrowRect, color, orientation );
 
         return true;
     }
@@ -4298,7 +4303,7 @@ namespace Lightly
         _helper->renderButtonFrame( painter, frameRect, background, palette, hasFocus, sunken, mouseOver, enabled, windowActive ); //TODO: use sides?
 
         // also render separator
-        auto separatorRect( rect.adjusted( 0, 2, -2, -2 ) );
+        auto separatorRect( rect.adjusted( 0, 9, -2, -9 ) );
         separatorRect.setWidth( 1 );
         separatorRect = visualRect( option, separatorRect );
         if( sunken ) separatorRect.translate( 1, 1 );
@@ -4961,7 +4966,7 @@ namespace Lightly
         
         // draw background
         int opacity = _helper->titleBarColor( windowActive ).alphaF()*100.0;
-        painter->fillRect(rect, _helper->alphaColor(option->palette.color( QPalette::Window ), opacity/100.0) );
+        painter->fillRect(rect, _helper->alphaColor(option->palette.color( QPalette::Window ), opacity) );
         
         bool shouldDrawShadow = false;
         if ( LightlyPrivate::possibleTranslucentToolBars.isEmpty() ) shouldDrawShadow = true;
@@ -5019,14 +5024,14 @@ namespace Lightly
         const auto& rect( option->rect );
         const auto& palette( option->palette );
         
-        if ( widget && _helper->titleBarColor( windowActive ).alphaF()*100.0 < 100 && _translucentWidgets.contains( widget->window() ) && StyleConfigData::widgetDrawShadow() )
+        if ( widget && _helper->titleBarColor( windowActive ).alphaF()*100.0 < 100 && _translucentWidgets.contains( widget->window() ) )
         {
             
             _helper->renderTransparentArea( painter, rect );
 
             // draw background
             int opacity = _helper->titleBarColor( windowActive ).alphaF()*100.0;
-            painter->fillRect(rect, _helper->alphaColor(option->palette.color( QPalette::Window ), opacity/100.0) );
+            painter->fillRect(rect, _helper->alphaColor(option->palette.color( QPalette::Window ), opacity) );
             
             bool shouldDrawShadow = false;
             int shadow_xoffset = 0;

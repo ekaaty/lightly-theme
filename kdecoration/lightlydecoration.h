@@ -29,6 +29,7 @@
 #include <KDecoration2/DecoratedClient>
 #include <KDecoration2/DecorationSettings>
 
+#include <QPainterPath>
 #include <QPalette>
 #include <QVariant>
 
@@ -98,12 +99,22 @@ namespace Lightly
         inline bool hideTitleBar() const;
         //@}
 
+        std::shared_ptr<QPainterPath> titleBarPath()
+        {
+            return m_titleBarPath;
+        }
+        std::shared_ptr<QPainterPath> windowPath()
+        {
+            return m_windowPath;
+        }
+
         public Q_SLOTS:
-        void init() override;
+        virtual bool init() override;
 
         private Q_SLOTS:
         void reconfigure();
         void recalculateBorders();
+        void updateBlur();
         void updateButtonsGeometry();
         void updateButtonsGeometryDelayed();
         void updateTitleBar();
@@ -116,6 +127,7 @@ namespace Lightly
         QPair<QRect,Qt::Alignment> captionRect() const;
 
         void createButtons();
+        void calculateWindowAndTitleBarShapes(const bool windowShapeOnly = false);
         void paintTitleBar(QPainter *painter, const QRect &repaintRegion);
         void createShadow();
 
@@ -148,6 +160,14 @@ namespace Lightly
         //* active state change opacity
         qreal m_opacity = 0;
 
+        //* Rectangular area of titlebar without clipped corners
+        QRect m_titleRect;
+
+        //* Exact titlebar path, with clipped rounded corners
+        std::shared_ptr<QPainterPath> m_titleBarPath = std::make_shared<QPainterPath>();
+        //* Exact window path, with clipped rounded corners
+        std::shared_ptr<QPainterPath> m_windowPath = std::make_shared<QPainterPath>();
+
     };
 
     bool Decoration::hasBorders() const
@@ -169,28 +189,28 @@ namespace Lightly
     }
 
     bool Decoration::isMaximized() const
-    { return client().data()->isMaximized() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return client()->isMaximized() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isMaximizedHorizontally() const
-    { return client().data()->isMaximizedHorizontally() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return client()->isMaximizedHorizontally() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isMaximizedVertically() const
-    { return client().data()->isMaximizedVertically() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return client()->isMaximizedVertically() && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isLeftEdge() const
-    { return (client().data()->isMaximizedHorizontally() || client().data()->adjacentScreenEdges().testFlag( Qt::LeftEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return (client()->isMaximizedHorizontally() || client()->adjacentScreenEdges().testFlag( Qt::LeftEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isRightEdge() const
-    { return (client().data()->isMaximizedHorizontally() || client().data()->adjacentScreenEdges().testFlag( Qt::RightEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return (client()->isMaximizedHorizontally() || client()->adjacentScreenEdges().testFlag( Qt::RightEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isTopEdge() const
-    { return (client().data()->isMaximizedVertically() || client().data()->adjacentScreenEdges().testFlag( Qt::TopEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return (client()->isMaximizedVertically() || client()->adjacentScreenEdges().testFlag( Qt::TopEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::isBottomEdge() const
-    { return (client().data()->isMaximizedVertically() || client().data()->adjacentScreenEdges().testFlag( Qt::BottomEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
+    { return (client()->isMaximizedVertically() || client()->adjacentScreenEdges().testFlag( Qt::BottomEdge ) ) && !m_internalSettings->drawBorderOnMaximizedWindows(); }
 
     bool Decoration::hideTitleBar() const
-    { return m_internalSettings->hideTitleBar() && !client().data()->isShaded(); }
+    { return m_internalSettings->hideTitleBar() && !client()->isShaded(); }
 
 }
 
