@@ -1,134 +1,172 @@
-<p align="center">
-  <img src="logo.png"/>
-</p>
 
-*Lightly* is a fork of breeze theme style that aims to be visually modern and minimalistic. 
+# About this fork
 
-## Development ⚠️
+This fork attempts to revive lightly with a different approach from boehs, with the assumption that Luwx won't ever resume his project.
 
-Lightly is a work in progress theme, there is still a lot to change, so expect bugs! Some applications may suddenly crash or flicker.
+This means that this fork allows real changes, and not just maintainence.
 
-If you have any feedback or encounter some bugs, feel free to open an issue or a pr.
+![Lightly](https://github.com/user-attachments/assets/ae39fc7f-8277-48b1-b80c-9e307542b8b0)
 
 
-## Screenshots
+## The to-do list
 
-![default](https://github.com/Luwx/Lightly/blob/master/Lightly-default.png)
-
-With transparent dolphin view off and no sidebar transparency:
-![custom](https://github.com/Luwx/Lightly/blob/master/Lightly-custom.png)
-
-With a full glass color scheme (currently full glass color schemes are very buggy and not fully supported):
-![fullglass](https://github.com/Luwx/Lightly/blob/master/Lightly-fullglass.png)
-
-## Configuration
-
-![config page](https://github.com/Luwx/Lightly/blob/master/config.png)
-
-Lightly configuration page can be found in the KDE system settings under the Application style section. 
+- [x] Make a new readme
+- [x] Make install work on plasma 6
+- [ ] Find ~~some~~ more people that can help with this project
+- [ ] Build some community
+- [ ] Make some meaningful commits
+- [ ] Expand to-do list
 
 
-Most of these options are inherited from Breeze style, but Lightly has a few exclusive options that are enabled by default, including:
-
-* Transparent Dolphin view (under the **frames** tab). This option disables the background and shadows of Dolphin view widget and draws top and bottom separators when the view has scrollable content.
-
-*  Sidebar opacity (under the **transparency** tab). By default, it's 60. If it's bellow 100, shadows will be drawn automatically. 
-
-The toolbar and menubar will follow the **titlebar** opacity. To configure the titlebar opacity, you will have to change the color scheme file directly in ~/.local/share/color-schemes. Open your desired color scheme and, in the ```[WM]``` section, add a fourth value to ```activeBackground``` and ```inactiveBackground```, like ```activeBackground=0,0,0,127``` where the last value is the alpha, that ranges from 0 (completely transparent) to 255 (totally opaque).
+## My plans for changes at the moment -- They are in progress, I'm just really slow
+- [x] Redesign the tabbar
+  - [ ] Fix the issues I caused with it
+  - [x] Align it a little better, ~~now it's slightly too left,~~ it needs slightly larger margins for ~~both sides~~ the right side
+  - [x] You can now set the old tabbar back if you dont like the new one in the settings
+- [ ] Make the buttons sligthly larger
+  - [x] The standard push button is now slightly larger
+  - [x] Spinboxes and comboboxes
+  - [x] Now the size of the buttons is adjustable by the user in the settings
+- [x] Change the defaults to fit the normal use-cases better
+- [x] Add my own colorscheme to it
+- [ ] Use [klassy](https://github.com/paulmcauley/klassy) for window decorations (I don't know how to use make / cmake, so it'll take a while)
+- [ ] Make installation in all major distros easy
+  - [x] Can be built on most distros that support plasma 6 
+- [ ] Rename the project to something like „Darkly” to reflect the changes, and for it to be installable alongside the other lightly
+- [ ] Maintain the project
 
 ## Installation
+## Automatic
 
-### Installing Lightly from [chaotic-aur](https://aur.chaotic.cx/) on ArchLinux and its [derivatives](https://wiki.archlinux.org/title/Arch-based_distributions)
-  1. Follow the instructions [here](https://aur.chaotic.cx/) on how to setup chaotic-aur 
-  2. run: ```sudo pacman -Syyu lightly-qt```
+#### Fedora copr
 
-### Installing Lightly from RPM repository on openSUSE Tumbleweed:
-
-1. Add "sputnik-look-and-feel" repository:
-```sudo zypper ar -ef https://download.opensuse.org/repositories/home:/sputnik:/look-and-feel/openSUSE_Tumbleweed/ sputnik-look-and-feel```
-2. Refresh repository list:
-```sudo zypper ref```
-3. You will be notified about received new repository key. And you will be asked if you want to accept the key. This repository is created on OBS. All builds are reproducible.
-Type "```a```" and press enter.
-4. Install Lightly:
-```sudo zypper in Lightly```
-
-### Fedora
-```
-sudo dnf install Lightly
-```
-
-### Fedora 32 RPM repository
-
-1. Create repo file:
-```
-echo  "[sputnik-look-and-feel]
-name=Look And Feel (Fedora_32)
-type=rpm-md
-baseurl=https://download.opensuse.org/repositories/home:/sputnik:/look-and-feel/Fedora_32/
-gpgcheck=1
-gpgkey=https://download.opensuse.org/repositories/home:/sputnik:/look-and-feel/Fedora_32/repodata/repomd.xml.key
-enabled=1" | sudo tee -a /etc/yum.repos.d/sputnik-look-and-feel.repo
-```
-2. Install Lightly:
-```sudo dnf install Lightly```
+<https://copr.fedorainfracloud.org/coprs/deltacopy/lightly-qt6/>
 
 
+#### AUR
 
-## Manual installation
+<https://aur.archlinux.org/packages/lightly-qt6>
 
-### Dependencies
 
-Taken from https://github.com/n4n0GH/hello
-
-#### Ubuntu
-```
-sudo apt install cmake build-essential libkf5config-dev libkdecorations2-dev libqt5x11extras5-dev qtdeclarative5-dev extra-cmake-modules libkf5guiaddons-dev libkf5configwidgets-dev libkf5windowsystem-dev libkf5coreaddons-dev libkf5iconthemes-dev gettext qt3d5-dev
-```
+## Manual
 
 #### Arch Linux
-```
-sudo pacman -S cmake extra-cmake-modules kdecoration qt5-declarative qt5-x11extras
-```
-
-#### Fedora
-```
-sudo dnf install cmake extra-cmake-modules "cmake(Qt5Core)" "cmake(Qt5Gui)" "cmake(Qt5DBus)" "cmake(Qt5X11Extras)" "cmake(KF5GuiAddons)" "cmake(KF5WindowSystem)" "cmake(KF5I18n)" "cmake(KDecoration2)" "cmake(KF5CoreAddons)" "cmake(KF5ConfigWidgets)" "cmake(Qt5UiTools)" "cmake(KF5GlobalAccel)" "cmake(KF5IconThemes)" kwin-devel libepoxy-devel "cmake(KF5Init)" "cmake(KF5Crash)" "cmake(KF5KIO)" "cmake(KF5Notifications)" kf5-kpackage-devel
-```
-
-#### openSUSE
-```
-sudo zypper install cmake gcc-c++ extra-cmake-modules libQt5Gui-devel libQt5DBus-devel libqt5-qttools-devel libqt5-qtx11extras-devel libQt5OpenGL-devel libQt5Network-devel libepoxy-devel kconfig-devel kconfigwidgets-devel kcrash-devel kglobalaccel-devel ki18n-devel kio-devel kservice-devel kinit-devel knotifications-devel kwindowsystem-devel kguiaddons-devel kiconthemes-devel kpackage-devel kwin5-devel xcb-util-devel xcb-util-cursor-devel xcb-util-wm-devel xcb-util-keysyms-devel
-```
-
-#### Solus
-```
-sudo eopkg install extra-cmake-modules kdecoration-devel qt5-declarative-devel qt5-x11extras-devel qt5-base-devel kcoreaddons-devel kguiaddons-devel kconfigwidgets-devel kwindowsystem-devel ki18n-devel kiconthemes-devel kcmutils-devel libxcb-devel xcb-util-devel qt5-wayland-devel kwayland-devel wayland-devel frameworkintegration-devel
-```
-
-
-### Build and install
 
 ```
-git clone --single-branch --depth=1 https://github.com/Luwx/Lightly.git
+sudo pacman -S cmake extra-cmake-modules kdecoration qt6-declarative kcoreaddons kcmutils kcolorscheme kconfig kguiaddons kiconthemes kwindowsystem git
+```
+```
+git clone --single-branch --depth=1 https://github.com/Bali10050/Lightly.git
 cd Lightly && mkdir build && cd build
 cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_TESTING=OFF ..
-make
+cd ./kdecoration/config/
+make -j $(nproc)
+cd ../../
+make -j $(nproc)
 sudo make install
 ```
 
-### Uninstall
+***
 
-In the build folder:
+#### Fedora
+
+#####  Fedora 40
+
 ```
-sudo make uninstall
+sudo dnf install -y git cmake extra-cmake-modules "cmake(KDecoration2)" kwin-devel \
+    kf6-kcolorscheme-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel \
+    kf6-kirigami-devel kf6-kcmutils-devel kf6-frameworkintegration-devel
+```
+```
+git clone --single-branch --depth=1 https://github.com/Bali10050/Lightly.git
+cd Lightly && mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib64 -DBUILD_TESTING=OFF ..
+cd ./kdecoration/config/
+make -j $(nproc)
+cd ../../
+make -j $(nproc)
+sudo make install
 ```
 
-## Acknowledgments
+***
+#### openSUSE Tumbleweed
 
-Breeze authors and Kvantum developer Pedram Pourang.
+```
+sudo zypper in --no-recommends ninja cmake kf6-extra-cmake-modules kf6-kconfig-devel kf6-frameworkintegration-devel gmp-ecm-devel kf6-kconfigwidgets-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel kf6-kwindowsystem-devel kf6-kcolorscheme-devel kf6-kcoreaddons-devel kf6-kcmutils-devel kcmutils qt6-quick-devel kf6-kirigami-devel qt6-base-devel kdecoration6-devel  qt6-tools qt6-widgets-devel gcc-c++ extra-cmake-modules libQt5Gui-devel libQt5DBus-devel libqt5-qttools-devel libqt5-qtx11extras-devel libQt5OpenGL-devel libQt5Network-devel libepoxy-devel kconfig-devel kconfigwidgets-devel kcrash-devel kglobalaccel-devel ki18n-devel kio-devel kservice-devel kinit-devel knotifications-devel kwindowsystem-devel kguiaddons-devel kiconthemes-devel kpackage-devel kwin5-devel xcb-util-devel xcb-util-cursor-devel xcb-util-wm-devel xcb-util-keysyms-devel git
+```
+```
+git clone --single-branch --depth=1 https://github.com/Bali10050/Lightly.git
+cd Lightly && mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_LIBDIR=lib64 -DBUILD_TESTING=OFF ..
+cd ./kdecoration/config/
+make -j $(nproc)
+cd ../../
+make -j $(nproc)
+sudo make install
+```
+***
 
 
+#### KDE neon
+```
+sudo apt install git build-essential cmake kf6-extra-cmake-modules kf6-extra-cmake-modules kf6-frameworkintegration-dev kf6-kcmutils-dev kf6-kcolorscheme-dev kf6-kconfig-dev kf6-kconfigwidgets-dev kf6-kcoreaddons-dev kf6-kguiaddons-dev kf6-ki18n-dev kf6-kiconthemes-dev kf6-kirigami2-dev kf6-kpackage-dev kf6-kservice-dev kf6-kwindowsystem-dev kirigami2-dev kwayland-dev libx11-dev libkdecorations2-dev libkf5config-dev libkf5configwidgets-dev libkf5coreaddons-dev libkf5guiaddons-dev libkf5i18n-dev libkf5iconthemes-dev libkf5kcmutils-dev libkf5package-dev libkf5service-dev libkf5style-dev libkf5wayland-dev libkf5windowsystem-dev libplasma-dev libqt5x11extras5-dev qt6-base-dev qt6-declarative-dev qtbase5-dev qtdeclarative5-dev gettext qt6-svg-dev extra-cmake-modules qt3d5-dev
+```
+```
+git clone --single-branch --depth=1 https://github.com/Bali10050/Lightly.git
+cd Lightly && mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_TESTING=OFF ..
+cd ./kdecoration/config/
+make -j $(nproc)
+cd ../../
+make -j $(nproc)
+sudo make install
+```
+***
 
 
+#### Distrobox (Fedora 40)
+```
+distrobox create --name lightly --image fedora-toolbox:40
+distrobox enter lightly
+```
 
+```
+sudo dnf install -y cmake extra-cmake-modules "cmake(KDecoration2)" kwin-devel \
+    kf6-kcolorscheme-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel \
+    kf6-kirigami-devel kf6-kcmutils-devel
+
+git clone --single-branch --depth=1 https://github.com/Bali10050/Lightly.git
+cd Lightly
+mkdir build
+cd build
+cmake -DCMAKE_INSTALL_PREFIX=$HOME/.local \
+      -DCMAKE_BUILD_TYPE=Release \
+      -DCMAKE_INSTALL_LIBDIR=lib64 \
+      -DBUILD_TESTING=OFF ..
+
+cd ./kdecoration/config/
+make -j $(nproc)
+cd ../../
+make -j $(nproc)
+make install
+```
+
+Set environment variable on plasma startup:
+```
+echo "export QT_PLUGIN_PATH=$HOME/.local/lib64/plugins:\$QT_PLUGIN_PATH" > $HOME/.config/plasma-workspace/env/localthemes.sh && chmod +x $HOME/.config/plasma-workspace/env/localthemes.sh
+```
+***
+
+## Known issues & solutions
+
+### Blurred icon rendering on Wayland with fractional scaling
+
+As referenced in https://github.com/Bali10050/Lightly/issues/14
+
+On Wayland when scaling is set to >100% some icons appear blurred.
+
+The fix for now until QT is updated is to add `QT_SCALE_FACTOR_ROUNDING_POLICY=RoundPreferFloor` into the file `/etc/environment`
+
+Restart to apply the changes.
+
+For further details see: https://bugs.kde.org/show_bug.cgi?id=479891

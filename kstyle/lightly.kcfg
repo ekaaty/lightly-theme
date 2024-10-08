@@ -42,7 +42,9 @@
        <min>1</min>
        <max>8</max>
     </entry>
-
+    <entry name="ButtonSize" type="Int">
+        <default>4</default>
+    </entry>
   </group>
 
   <!-- widget style -->
@@ -110,12 +112,15 @@
     </entry>
     
     <entry name="TransparentDolphinView" type="Bool">
-      <default>true</default>
+      <default>false</default>
     </entry>
     
     <!-- shadows on widgets -->
     <entry name="WidgetDrawShadow" type="Bool">
       <default>true</default>
+    </entry>
+    <entry name="OldTabbar" type="Bool">
+      <default>false</default>
     </entry>
 
     <!-- tree views -->
@@ -238,11 +243,11 @@
 
     <!-- transparency -->
     <entry name="MenuOpacity" type="Int">
-        <default>80</default>
+        <default>100</default>
     </entry>
     
     <entry name="DolphinSidebarOpacity" type="Int">
-        <default>60</default>
+        <default>100</default>
     </entry>
 
   </group>

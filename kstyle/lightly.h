@@ -123,10 +123,10 @@ namespace Lightly
         Slider_ControlThickness = 20,
 
         // tabbar
-        TabBar_TabMarginHeight = 4,
-        TabBar_TabMarginWidth = 8,
-        TabBar_TabMinWidth = 80,
-        TabBar_TabMinHeight = 33,
+        TabBar_TabMarginHeight = 8,
+        TabBar_TabMarginWidth = 12,
+        TabBar_TabMinWidth = 85,
+        TabBar_TabMinHeight = 36,
         TabBar_TabItemSpacing = 8,
         TabBar_TabOverlap = 0,
         TabBar_BaseOverlap = 2,

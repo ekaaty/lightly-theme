@@ -2133,6 +2133,7 @@ namespace Lightly
             if( StyleConfigData::tabBarTabExpandFullWidth() ) tabBarRect.setWidth(rect.width() - 2*Metrics::Frame_FrameWidth - sizeCorrection); // adwaita qt style tab 
             else tabBarRect.setWidth( qMin( tabBarRect.width(), rect.width() - 2 ) );  // fixed width tabs      
             if( tabBarAlignment == Qt::AlignCenter ) tabBarRect.moveLeft( rect.left() + (rect.width() - tabBarRect.width())/2 );
+            else if(tabOption->lineWidth == 0)tabBarRect.moveLeft( rect.left() + 4);
             else tabBarRect.moveLeft( rect.left() - 1);
 
             tabBarRect = visualRect( option, tabBarRect );
@@ -2922,7 +2923,7 @@ namespace Lightly
         if( !flat ) size = expandSize( size, frameWidth );
 
         // make sure there is enough height for the button
-        size.setHeight( qMax( size.height(), int(Metrics::MenuButton_IndicatorWidth) ) );
+        size.setHeight( qMax( size.height() + StyleConfigData::buttonSize(), int(Metrics::MenuButton_IndicatorWidth) ) );
 
         // add button width and spacing
         size.rwidth() += Metrics::MenuButton_IndicatorWidth+2;
@@ -2950,7 +2951,7 @@ namespace Lightly
         if( !flat ) size = expandSize( size, frameWidth );
 
         // make sure there is enough height for the button
-        size.setHeight( qMax( size.height(), int(Metrics::SpinBox_ArrowButtonWidth) ) );
+        size.setHeight( qMax( size.height() + StyleConfigData::buttonSize(), int(Metrics::SpinBox_ArrowButtonWidth) ) );
 
         // add button width and spacing
         size.rwidth() += Metrics::SpinBox_ArrowButtonWidth;
@@ -3046,7 +3047,7 @@ namespace Lightly
                 QSize iconSize = buttonOption->iconSize;
                 if( !iconSize.isValid() ) iconSize = QSize( pixelMetric( PM_SmallIconSize, option, widget ), pixelMetric( PM_SmallIconSize, option, widget ) );
 
-                size.setHeight( qMax( size.height(), iconSize.height() ) );
+                size.setHeight( qMax( size.height() + StyleConfigData::buttonSize(), iconSize.height() ) );
                 size.rwidth() += iconSize.width();
 
                 if( hasText ) size.rwidth() += Metrics::Button_ItemSpacing;
@@ -6349,7 +6350,7 @@ namespace Lightly
         else if( hasFocus ) focusColor =  _helper->focusColor( palette );
 
         // render focus line
-        _helper->renderFocusLine( painter, textRect, focusColor );
+        // _helper->renderFocusLine( painter, textRect, focusColor );
 
         if( verticalTabs ) painter->restore();
 
@@ -6454,49 +6455,50 @@ namespace Lightly
         // store tab shape
         Side side;
 
+        if (StyleConfigData::oldTabbar()){
         switch( tabOption->shape )
         {
             case QTabBar::RoundedNorth:
             case QTabBar::TriangularNorth:
-            
+
             side = SideTop;
             if ( selected ) {
-                
+
                 corners = CornerTopLeft|CornerTopRight;
-                
-            } 
-            
+
+            }
+
             shadowRect = QRect(rect.bottomLeft() + QPoint(0,1), QSize(rect.width() , shadowSize));
-            if( isFirst ) backgroundCorners |= CornerTopLeft; 
+            if( isFirst ) backgroundCorners |= CornerTopLeft;
             else shadowRect.adjust(-shadowSize, 0, 0, 0);
             if( isLast ) backgroundCorners |= CornerTopRight;
             if( isLeftOfSelected ) shadowRect.adjust(0, 0, shadowSize, 0);
-            
+
             backgroundRect = rect;
             rect.adjust(3, 3, -3, 0);
             break;
 
-            
+
             case QTabBar::RoundedSouth:
             case QTabBar::TriangularSouth:
-            
+
             side = SideBottom;
             if( selected ) corners = CornerBottomLeft|CornerBottomRight;
-            
+
             shadowRect = QRect(rect.topLeft() - QPoint(0 ,shadowSize + 1), QSize(rect.width() , shadowSize));
             if( isFirst ) backgroundCorners |= CornerBottomLeft;
             else shadowRect.adjust(-shadowSize, 0, 0, 0);
             if( isLast ) backgroundCorners |= CornerBottomRight;
             //if( isLeftOfSelected ) shadowRect.adjust(0, 0, shadowSize, 0);
-             
+
             backgroundRect = rect;
             rect.adjust(3, 0, -3, -3);
             break;
 
-            
+
             case QTabBar::RoundedWest:
             case QTabBar::TriangularWest:
-            
+
             side = SideLeft;
             if( selected )
             {
@@ -6517,7 +6519,7 @@ namespace Lightly
 
             case QTabBar::RoundedEast:
             case QTabBar::TriangularEast:
-                
+
             side = SideRight;
             if( selected )
             {
@@ -6539,6 +6541,90 @@ namespace Lightly
 
             default: break;
         }
+        }else {
+        switch( tabOption->shape )
+        {
+            case QTabBar::RoundedNorth:
+            case QTabBar::TriangularNorth:
+            
+            side = SideTop;
+            if ( selected ) {
+
+                corners = CornerTopLeft|CornerTopRight|CornerBottomLeft|CornerBottomRight;
+
+            } 
+            
+            shadowRect = QRect(rect.bottomLeft() + QPoint(0,1), QSize(rect.width() , shadowSize));
+            if( isFirst ) backgroundCorners |= CornerTopLeft|CornerBottomLeft;
+            else shadowRect.adjust(-shadowSize, 0, 0, 0);
+            if( isLast ) backgroundCorners |= CornerTopRight|CornerBottomRight;
+            if( isLeftOfSelected ) shadowRect.adjust(0, 0, shadowSize, 0);
+            
+            backgroundRect = rect;
+            rect.adjust(4, 4, -4, -4);
+            break;
+
+            
+            case QTabBar::RoundedSouth:
+            case QTabBar::TriangularSouth:
+            
+            side = SideBottom;
+            if( selected ) corners = CornerTopLeft|CornerTopRight|CornerBottomLeft|CornerBottomRight;
+            
+            shadowRect = QRect(rect.topLeft() - QPoint(0 ,shadowSize + 1), QSize(rect.width() , shadowSize));
+            if( isFirst ) backgroundCorners |= CornerBottomLeft|CornerTopLeft;
+            else shadowRect.adjust(-shadowSize, 0, 0, 0);
+            if( isLast ) backgroundCorners |= CornerBottomRight|CornerTopRight;
+            //if( isLeftOfSelected ) shadowRect.adjust(0, 0, shadowSize, 0);
+             
+            backgroundRect = rect;
+            rect.adjust(4, 4, -4, -4);
+            break;
+
+            
+            case QTabBar::RoundedWest:
+            case QTabBar::TriangularWest:
+            
+            side = SideLeft;
+            if( selected )
+            {
+                corners = CornerTopLeft|CornerTopRight|CornerBottomLeft|CornerBottomRight;
+
+            } else {
+
+                rect.adjust(4, 4, -4, -4);
+                if( isFirst ) corners |= CornerTopLeft|CornerTopRight;
+                if( isLast ) corners |= CornerBottomLeft|CornerBottomRight;
+                if( isRightOfSelected ) rect.adjust( 0, -StyleConfigData::cornerRadius(), 0, 0 );
+                if( isLeftOfSelected ) rect.adjust( 0, 0, 0, StyleConfigData::cornerRadius() );
+                else if( !isLast ) rect.adjust( 0, 0, 0, overlap );
+
+            }
+            break;
+
+            case QTabBar::RoundedEast:
+            case QTabBar::TriangularEast:
+                
+            side = SideRight;
+            if( selected )
+            {
+
+                corners = CornerTopLeft|CornerTopRight|CornerBottomLeft|CornerBottomRight;
+
+            } else {
+
+                rect.adjust(4, 4, -4, -4);
+                if( isFirst ) corners |= CornerTopRight|CornerTopLeft;
+                if( isLast ) corners |= CornerBottomRight|CornerBottomLeft;
+                if( isRightOfSelected ) rect.adjust( 0, -StyleConfigData::cornerRadius(), -StyleConfigData::cornerRadius(), 0 );
+                if( isLeftOfSelected ) rect.adjust( 0, -StyleConfigData::cornerRadius(), 0, StyleConfigData::cornerRadius() );
+                else if( !isLast ) rect.adjust( 0, 0, 0, overlap );
+
+            }
+            break;
+
+            default: break;
+        }}
 
         const bool unifiedTabAndHeader = _isKonsole && StyleConfigData::unifiedTabBarKonsole();
         if( documentMode && unifiedTabAndHeader && _helper->titleBarColor( true ).alphaF() < 1.0) {
@@ -6550,22 +6636,22 @@ namespace Lightly
         
         // render
         if( StyleConfigData::tabBarAltStyle() ) {
-                
+
             const int hightlightHeight = selected ? 4 : 2;
             const QColor hightlightColor( selected ?  _helper->focusColor(palette) : _helper->isDarkTheme(palette) ? QColor(255,255,255,30) : QColor(0,0,0,30) );
-            
+
             const int offset = selected ? 0 : 1;
             const int radius = isFirst || isLast || selected ? hightlightHeight/2 : 0;
-            
+
             painter->setPen(Qt::NoPen);
             painter->setBrush( hightlightColor );
             painter->setRenderHint( QPainter::Antialiasing, true );
             painter->drawRoundedRect(backgroundRect.adjusted(
-                    side == SideLeft ? backgroundRect.width() - (hightlightHeight+offset) : (side == SideRight && !selected) ? 1 : 0, 
-                    side == SideTop ? backgroundRect.height() - (hightlightHeight+offset) : (side == SideBottom && !selected) ? 1 : 0, 
-                    side == SideRight ? - backgroundRect.width() + (hightlightHeight+offset) : (side == SideLeft && !selected) ? -1 : 0, 
+                    side == SideLeft ? backgroundRect.width() - (hightlightHeight+offset) : (side == SideRight && !selected) ? 1 : 0,
+                    side == SideTop ? backgroundRect.height() - (hightlightHeight+offset) : (side == SideBottom && !selected) ? 1 : 0,
+                    side == SideRight ? - backgroundRect.width() + (hightlightHeight+offset) : (side == SideLeft && !selected) ? -1 : 0,
                     side == SideBottom ? -backgroundRect.height() + (hightlightHeight+offset) : (side == SideTop && !selected) ? -1 : 0 ), radius, radius);
-            
+
         }
         else if( selected )
         {
@@ -6595,11 +6681,11 @@ namespace Lightly
                     _helper->renderTabBarTab(painter, rect, color, corners);
                 }
                 else {
-                    
+
                     // render dark background and shadow
                     _helper->renderTabBarTab(painter, backgroundRect, backgroundColor, backgroundCorners);
                     _helper->renderBoxShadow(painter, shadowRect, 0, 1, shadowSize, QColor(0,0,0, 220), StyleConfigData::cornerRadius(), true);
-                    
+
                     _helper->renderBoxShadow(painter, rect/*.adjusted(0,0,0,4)*/,0, 1, 4, QColor(0,0,0, 220), StyleConfigData::cornerRadius(), true);
                     _helper->renderTabBarTab(painter, rect, color, corners);
                 }
@@ -6644,23 +6730,14 @@ namespace Lightly
 
         } else {
             
-            if(documentMode)
-            {
-                // render dark background and shadow
-                if( !unifiedTabAndHeader ) {
-                    _helper->renderTabBarTab(painter, backgroundRect, backgroundColor, backgroundCorners);
-                }
-                _helper->renderBoxShadow(painter, shadowRect, 0, 1, shadowSize, QColor(0,0,0, 220), StyleConfigData::cornerRadius(), true);
-            }
-            else {
                 _helper->renderTabBarTab(painter, backgroundRect, backgroundColor, backgroundCorners);
                 if( mouseOver ) {
-                    backgroundRect.adjust(5, 6, -5, -6);
-                    painter->setBrush( _helper->alphaColor(_helper->focusColor(palette), 0.2) );
+                    backgroundRect.adjust(4, 4, -4, -4);
+                    painter->setBrush( _helper->alphaColor(_helper->hoverColor(palette), 0.2) );
                     painter->drawRoundedRect(backgroundRect, StyleConfigData::cornerRadius(), StyleConfigData::cornerRadius());
                 }
                 
-            }
+
         }
 
         return true;

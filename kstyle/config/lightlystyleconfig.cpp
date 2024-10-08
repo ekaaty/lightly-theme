@@ -61,9 +61,11 @@ namespace Lightly
         connect( _scrollBarSubLineButtons, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( _windowDragMode, SIGNAL(currentIndexChanged(int)), SLOT(updateChanged()) );
         connect( _menuOpacity, &QAbstractSlider::valueChanged, this, &StyleConfig::updateChanged );
+        connect( _buttonSize, &QAbstractSlider::valueChanged, this, &StyleConfig::updateChanged );
         connect( _sidebarOpacity, &QAbstractSlider::valueChanged, this, &StyleConfig::updateChanged );
         connect( _kTextEditDrawFrame, &QAbstractButton::toggled, this, &StyleConfig::updateChanged );
         connect( _widgetDrawShadow, &QAbstractButton::toggled, this, &StyleConfig::updateChanged );
+        connect( _oldTabbar, &QAbstractButton::toggled, this, &StyleConfig::updateChanged );
         connect( _transparentDolphinView, &QAbstractButton::toggled, this, &StyleConfig::updateChanged );
         connect( _cornerRadius, SIGNAL(valueChanged(int)), SLOT(updateChanged()) );
 
@@ -89,8 +91,10 @@ namespace Lightly
         StyleConfigData::setWindowDragMode( _windowDragMode->currentIndex() );
         StyleConfigData::setMenuOpacity( _menuOpacity->value() );
         StyleConfigData::setDolphinSidebarOpacity( _sidebarOpacity->value() );
+        StyleConfigData::setButtonSize( _buttonSize->value() );
         StyleConfigData::setKTextEditDrawFrame( _kTextEditDrawFrame->isChecked() );
         StyleConfigData::setWidgetDrawShadow( _widgetDrawShadow->isChecked() );
+        StyleConfigData::setOldTabbar( _oldTabbar->isChecked() );
         StyleConfigData::setTransparentDolphinView( _transparentDolphinView->isChecked() );
         StyleConfigData::setCornerRadius( _cornerRadius->value() );
 
@@ -141,9 +145,11 @@ namespace Lightly
         else if( _animationsDuration->value() != StyleConfigData::animationsDuration() ) modified = true;
         else if( _windowDragMode->currentIndex() != StyleConfigData::windowDragMode() ) modified = true;
         else if( _menuOpacity->value() != StyleConfigData::menuOpacity() ) modified = true;
+        else if( _buttonSize->value() != StyleConfigData::buttonSize() ) modified = true;
         else if( _sidebarOpacity->value() != StyleConfigData::dolphinSidebarOpacity() ) modified = true;
         else if( _kTextEditDrawFrame->isChecked() != StyleConfigData::kTextEditDrawFrame() ) modified = true;
         else if( _widgetDrawShadow->isChecked() != StyleConfigData::widgetDrawShadow() ) modified = true;
+        else if( _oldTabbar->isChecked() != StyleConfigData::oldTabbar() ) modified = true;
         else if( _transparentDolphinView->isChecked() != StyleConfigData::transparentDolphinView() ) modified = true;
         else if( _cornerRadius->value() != StyleConfigData::cornerRadius() ) modified = true;
         
@@ -173,8 +179,10 @@ namespace Lightly
         _windowDragMode->setCurrentIndex( StyleConfigData::windowDragMode() );
         _menuOpacity->setValue( StyleConfigData::menuOpacity() );
         _sidebarOpacity->setValue( StyleConfigData::dolphinSidebarOpacity() );
+        _buttonSize->setValue( StyleConfigData::buttonSize() );
         _kTextEditDrawFrame->setChecked( StyleConfigData::kTextEditDrawFrame() );
         _widgetDrawShadow->setChecked( StyleConfigData::widgetDrawShadow() );
+        _oldTabbar->setChecked( StyleConfigData::oldTabbar() );
         _transparentDolphinView->setChecked( StyleConfigData::transparentDolphinView() );
         _cornerRadius->setValue( StyleConfigData::cornerRadius() );
 
