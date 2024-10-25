@@ -137,6 +137,8 @@ namespace Lightly
                 // cast to widget and check
                 QWidget* widget(qobject_cast<QWidget*>(object));
 
+                if (!widget || !widget->isWindow()) break;
+
                 if (!widget)
                     break;
 
@@ -173,9 +175,10 @@ namespace Lightly
         else 
             {
                 // blur entire window
+                // QT 6.8 now causes issues here when the alpha channel of the color scheme is < 255 with systemsettings
                 if( widget->palette().color( QPalette::Window ).alpha() < 255 )
                     return roundedRegion(rect, StyleConfigData::cornerRadius(), false, false, true, true);
-                
+
                 // blur specific widgets
                 QRegion region;
                 

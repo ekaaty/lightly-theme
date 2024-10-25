@@ -159,6 +159,10 @@ echo "export QT_PLUGIN_PATH=$HOME/.local/lib64/plugins:\$QT_PLUGIN_PATH" > $HOME
 
 ## Known issues & solutions
 
+> [!CAUTION]
+> Be careful with transparent themes on wayland, there seems to be a really big issue with them that I don't know how to fix yet
+> [#29](https://github.com/Bali10050/Lightly/issues/29)
+
 ### Blurred icon rendering on Wayland with fractional scaling
 
 As referenced in https://github.com/Bali10050/Lightly/issues/14

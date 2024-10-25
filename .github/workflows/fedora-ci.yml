@@ -1,0 +1,72 @@
+# Fedora 40
+# Build Lightly from release tag and publish .rpm package
+
+on:
+  workflow_call:
+    inputs:
+      cache-file-path:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+env:
+  SPEC_FILE: $GITHUB_WORKSPACE/.github/assets/specs/fedora/lightly-qt6.spec
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    container: fedora:latest
+    steps:
+      - name: Checkout local
+        uses: actions/checkout@v4.2.0
+        with:
+          repository: ${{ github.repository }}
+          sparse-checkout: |
+            .github/assets/specs/fedora/lightly-qt6.spec
+          sparse-checkout-cone-mode: false
+      - name: Update tag version inside spec file
+        run: sed -i "s/.*%define release_tag.*/%define release_tag ${{ inputs.version }}/" ${{ env.SPEC_FILE }}
+      - uses: actions/cache/restore@v4.1.0
+        id: cache
+        with:
+          key: ${{ runner.os }}-v${{ inputs.version }}-${{ hashFiles(inputs.cache-file-path) }}
+          path: ${{ inputs.cache-file-path }}
+          fail-on-cache-miss: true
+      - name: Install dependencies
+        run: |
+          sudo dnf install -y -q git rpmdevtools rpmlint cmake extra-cmake-modules "cmake(KDecoration2)" kwin-devel \
+                  kf6-kcolorscheme-devel kf6-kguiaddons-devel kf6-ki18n-devel kf6-kiconthemes-devel \
+                  kf6-kirigami-devel kf6-kcmutils-devel kf6-frameworkintegration-devel \
+                  "cmake(KF6Crash)" "cmake(KF6GlobalAccel)" "cmake(KF6KIO)" "cmake(KF6Notifications)" \
+                  "cmake(KF6Package)" "cmake(KWayland)" "cmake(Plasma)" "cmake(Plasma5Support)" \
+                  kf6-kpackage-devel libepoxy-devel
+      - name: Create rpm tree
+        run: rpmdev-setuptree
+      - name: Move tarball asset into sources
+        run: |
+          dest_filename=Lightly-${{ inputs.version }}.tar.gz
+          mv ${{ inputs.cache-file-path }} $HOME/rpmbuild/SOURCES/$dest_filename
+          ls -lart $HOME/rpmbuild/SOURCES/
+      - name: Move rpm specfile to specs
+        run: mv ${{ env.SPEC_FILE }} $HOME/rpmbuild/SPECS/
+      - name: Build rpm binary package
+        id: step_get_version
+        run: |
+          cd $HOME/rpmbuild/SPECS
+          rpmbuild -bb --quiet lightly-qt6.spec
+          rpm_file=$(find $HOME/rpmbuild/RPMS/x86_64 -name "*.rpm*" ! -name "*src*" ! -name "*debug*")
+          echo "rpm_file = $rpm_file"
+          source /etc/os-release
+          echo "Version ID = $VERSION_ID"
+
+          mv $rpm_file $HOME/rpmbuild/RPMS/x86_64/lightly-${{ inputs.version }}.fc$VERSION_ID.x86_64.rpm
+
+          ls -lart $HOME/rpmbuild/RPMS/x86_64/
+
+          echo "RPM_ASSET=$HOME/rpmbuild/RPMS/x86_64/lightly-${{ inputs.version }}.fc$VERSION_ID.x86_64.rpm" >> "$GITHUB_ENV"
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.8
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.RPM_ASSET }}
+

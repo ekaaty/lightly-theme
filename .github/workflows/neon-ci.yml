@@ -1,0 +1,49 @@
+# KDE Neon
+# Requires a custom docker container
+# The Dockerfile is inside .github/assets/docker/kde-neon
+# Build Lightly from release tag and publish .deb package
+
+on:
+  workflow_call:
+    inputs:
+      cache-file-path:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+env:
+  BUILD_REPO: https://github.com/Bali10050/Lightly/
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    container: deltacopy/lightly-kde-neon:0.1
+    steps:
+      - uses: actions/cache/restore@v4.1.0
+        id: cache
+        with:
+          key: ${{ runner.os }}-v${{ inputs.version }}-${{ hashFiles(inputs.cache-file-path) }}
+          path: ${{ inputs.cache-file-path }}
+          fail-on-cache-miss: true
+      - name: Extract release tarball
+        run: |
+          tar xvf ${{ inputs.cache-file-path }}
+      - name: Build Lightly
+        run: |
+          cmake -B build_kf6 -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_INSTALL_LIBDIR=lib -DBUILD_TESTING=OFF -Wno-dev -S Lightly-${{inputs.version}}
+          ls -lrta build_kf6
+          make -j $(nproc) -C build_kf6/kdecoration/config/
+          make -j $(nproc) -C build_kf6
+      - name: Create deb package
+        id: create_deb_package
+        run: |
+          cd build_kf6
+          checkinstall -D --pkgname lightly --pkgversion ${{ inputs.version }} --nodoc --default
+          deb_file=$(find . -name "*.deb*")
+          test ! -z $deb_file && mv $deb_file /home/neon/lightly_${{ inputs.version }}_kdeneon_amd64.deb
+          echo "DEB_ASSET=/home/neon/lightly_${{ inputs.version }}_kdeneon_amd64.deb" >> "$GITHUB_OUTPUT"
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.8
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ steps.create_deb_package.outputs.DEB_ASSET }}

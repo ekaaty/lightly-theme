@@ -1,0 +1,86 @@
+# Build Lightly and publish release
+name: Lightly build & release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+env:
+  BUILD_TYPE: Release
+  BUILD_WS: build_kf6
+  BUILD_REPO: https://github.com/Bali10050/Lightly/
+jobs:
+  release-ci:
+    runs-on: ubuntu-latest
+    outputs:
+      VERSION: ${{ steps.step_getlatest_tag.outputs.VERSION }}
+      ASSET: ${{ steps.step_get_asset.outputs.ASSET }}
+    steps:
+      - name: Checkout local
+        uses: actions/checkout@v4.2.0
+        with:
+          repository: ${{ github.repository }}
+          sparse-checkout: |
+            .github/workflows
+
+      - name: Install build dependencies
+        run: sudo apt-get install git -y -qq
+      - name: Get latest Lightly release tag
+        id: step_getlatest_tag
+        run: |
+          # get latest release tag from remote
+          latest_tag=$(git -c 'versionsort.suffix=-' ls-remote --exit-code --refs --sort='version:refname' --tags $BUILD_REPO '*.*.*' \
+                       | tail --lines=1 | cut --delimiter='/' --fields=3)
+          
+          echo "INFO: Latest tag = $latest_tag"
+          test ! -z "$latest_tag" && echo "LATEST_TAG=$latest_tag" >> "$GITHUB_ENV" \
+          || echo "ERROR: Latest tag not found" || exit 1
+          
+           # use the tag name but remove the 'v' for the asset name to publish
+          tagname=$(echo $latest_tag | sed 's/v//')
+          
+          echo "VERSION=$tagname" >> "$GITHUB_OUTPUT"
+      - name: Download tag asset
+        id: step_get_asset
+        run: |
+          curl -L $BUILD_REPO/archive/refs/tags/${{ env.LATEST_TAG }}.tar.gz --output lightly-${{ env.LATEST_TAG }}.tar.gz
+          echo "ASSET=lightly-${{ env.LATEST_TAG }}.tar.gz" >> "$GITHUB_OUTPUT"
+      - uses: actions/cache/save@v4.1.0
+        id: cache
+        with:
+          path: ${{ steps.step_get_asset.outputs.ASSET }}
+          key: ${{ runner.os }}-v${{ steps.step_getlatest_tag.outputs.VERSION }}-${{ hashFiles(steps.step_get_asset.outputs.ASSET) }}
+
+  Kubuntu:
+    needs: release-ci
+    uses: ./.github/workflows/kubuntu-ci.yml
+    with:
+      cache-file-path: ${{ needs.release-ci.outputs.ASSET }}
+      version: ${{ needs.release-ci.outputs.VERSION }}
+
+  openSUSE-Tumbleweed:
+    needs: release-ci
+    uses: ./.github/workflows/opensuse-tw-ci.yml
+    with:
+      cache-file-path: ${{ needs.release-ci.outputs.ASSET }}
+      version: ${{ needs.release-ci.outputs.VERSION }}
+
+  KDE-Neon:
+    needs: release-ci
+    uses: ./.github/workflows/neon-ci.yml
+    with:
+      cache-file-path: ${{ needs.release-ci.outputs.ASSET }}
+      version: ${{ needs.release-ci.outputs.VERSION }}
+
+  Fedora-40:
+    needs: release-ci
+    uses: ./.github/workflows/fedora-ci.yml
+    with:
+      cache-file-path: ${{ needs.release-ci.outputs.ASSET }}
+      version: ${{ needs.release-ci.outputs.VERSION }}
+
+  # Archlinux:
+  #   needs: release-ci
+  #   uses: ./.github/workflows/archlinux-ci.yml
+  #   with:
+  #     version: ${{ needs.release-ci.outputs.VERSION }}
+

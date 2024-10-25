@@ -1,0 +1,60 @@
+# openSUSE Tumbleweed
+# Build Lightly from release tag and publish .rpm package
+
+on:
+  workflow_call:
+    inputs:
+      cache-file-path:
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+env:
+  SPEC_FILE: $GITHUB_WORKSPACE/.github/assets/specs/opensuse-tw/lightly-qt6.spec
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    container: opensuse/tumbleweed:latest
+    steps:
+      - name: Install build dependencies
+        run: |
+          zypper in -y kdecoration6-devel kf6-kconfig-devel kf6-kconfigwidgets-devel \
+          kf6-kcoreaddons-devel kf6-frameworkintegration-devel kf6-kcmutils-devel \
+          kf6-kwindowsystem-devel kwayland6-devel libplasma6-devel kf6-kirigami-devel zstd rpm-build
+      - uses: actions/cache/restore@v4.1.0
+        id: cache
+        with:
+          key:  ${{ runner.os }}-v${{ inputs.version }}-${{ hashFiles(inputs.cache-file-path) }}
+          path: ${{ inputs.cache-file-path }}
+          fail-on-cache-miss: true
+      - name: Move tarball to rpm build location
+        run: |
+          mv ${{ inputs.cache-file-path }} /usr/src/packages/SOURCES/${{ inputs.version }}.tar.gz
+      - name: Checkout local
+        uses: actions/checkout@v4.2.0
+        with:
+          repository: ${{ github.repository }}
+          sparse-checkout: .github
+          sparse-checkout-cone-mode: false
+      - name: Update tag version inside spec file
+        run: |
+          sed -i "s/.*Version:.*/Version:     ${{ inputs.version }}/" ${{ env.SPEC_FILE }}
+      - name: Copy opensuse specfile to rpm build location
+        run: cp ${{ env.SPEC_FILE }} /usr/src/packages/SPECS
+      - name: Create rpm binary file
+        run: |
+          cd /usr/src/packages/SPECS
+          rpmbuild -bb lightly-qt6.spec
+          rpm_file=$(find /usr/src/packages/RPMS/x86_64 -name "*.rpm*" ! -name "*src*" ! -name "*debug*")
+          echo "rpm_file = $rpm_file"
+          mv $rpm_file /usr/src/packages/RPMS/x86_64/lightly-${{ inputs.version }}.openSUSE-tumbleweed.x86_64.rpm
+          echo "RPM_ASSET= /usr/src/packages/RPMS/x86_64/lightly-${{ inputs.version }}.openSUSE-tumbleweed.x86_64.rpm" >> "$GITHUB_ENV"
+      - name: Release
+        uses: softprops/action-gh-release@v2.0.8
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: ${{ env.RPM_ASSET }}
+
+
+

@@ -3530,6 +3530,9 @@ namespace Lightly
     //___________________________________________________________________________________
     bool Style::drawFrameFocusRectPrimitive( const QStyleOption* option, QPainter* painter, const QWidget* widget ) const
     {
+        /*  Removes focus indicator from the tabs  */
+        if (widget && widget->inherits("QTabBar"))
+        { return true; }
         // no focus indicator on buttons / scrollbars, since it is rendered elsewhere
         if ( qobject_cast<const QAbstractButton*>( widget ) || qobject_cast<const QScrollBar*>( widget ) || qobject_cast<const QGroupBox*>( widget ) )
         { return true; }
