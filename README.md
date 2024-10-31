@@ -37,15 +37,19 @@ This means that this fork allows real changes, and not just maintainence.
 
 ## Installation
 ## Automatic
+### Thanks to @DeltaCopy, you can use one of these install methods:
 
 #### Fedora copr
 
 <https://copr.fedorainfracloud.org/coprs/deltacopy/lightly-qt6/>
 
-
 #### AUR
 
 <https://aur.archlinux.org/packages/lightly-qt6>
+
+#### Pre-built packages
+
+<https://github.com/Bali10050/Lightly/releases>
 
 
 ## Manual
@@ -158,10 +162,6 @@ echo "export QT_PLUGIN_PATH=$HOME/.local/lib64/plugins:\$QT_PLUGIN_PATH" > $HOME
 ***
 
 ## Known issues & solutions
-
-> [!CAUTION]
-> Be careful with transparent themes on wayland, there seems to be a really big issue with them that I don't know how to fix yet
-> [#29](https://github.com/Bali10050/Lightly/issues/29)
 
 ### Blurred icon rendering on Wayland with fractional scaling
 
